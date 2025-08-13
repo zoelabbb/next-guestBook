@@ -49,10 +49,20 @@ function GuestBookPageContent() {
 
   async function loadMessages() {
     setLoading(true);
-    const res = await fetch("/api/messages?page=" + page + "&limit=" + limit);
-    const data = await res.json();
-    setMessages(data.messages || []);
-    setTotalMessages(data.totalMessages || 0);
+    try {
+      const res = await fetch("/api/messages?page=" + page + "&limit=" + limit);
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text);
+      }
+      const data = await res.json();
+      setMessages(data.messages || []);
+      setTotalMessages(data.totalMessages || 0);
+    } catch (err) {
+      setMessages([]);
+      setTotalMessages(0);
+      // Optional: tampilkan error di UI
+    }
     setLoading(false);
   }
 
