@@ -1,36 +1,103 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next.js Guest Book
+
+A modern guest book web app built with Next.js App Router, React 19, Prisma ORM, Bun, and TailwindCSS. Users can leave messages, see paginated visitor entries, and enjoy a secure, fast, and beautiful experience.
+
+## Features
+
+- Guest book UI with form validation and toast notifications
+- Paginated visitor messages
+- Email masking and XSS protection
+- Rate limiting for spam prevention
+- Prisma ORM (server-only) for data access
+- Bun as package manager
+- ESLint 9+ with flat config and ignores for generated Prisma
+- Ready for deployment on Vercel/Netlify
+
+## Tech Stack
+
+- Next.js 15 (App Router)
+- React 19
+- Prisma ORM
+- Bun
+- TailwindCSS
+- ESLint 9+
 
 ## Getting Started
 
-First, run the development server:
+### 1. Install dependencies
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+```sh
+bun install
+```
+
+### 2. Setup database
+
+- Edit `prisma/schema.prisma` as needed.
+- Run migrations:
+
+```sh
+bunx prisma migrate dev
+```
+
+- (Optional) Seed data:
+
+```sh
+bun prisma/seed/guest-data.ts
+```
+
+### 3. Generate Prisma Client
+
+```sh
+bunx prisma generate
+```
+
+### 4. Run development server
+
+```sh
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 5. Build for production
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```sh
+bun run build
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Deployment
 
-## Learn More
+### Vercel
 
-To learn more about Next.js, take a look at the following resources:
+- Make sure your `package.json` build script runs `prisma generate` before `next build`:
+  ```json
+  "build": "bun run prisma generate && bun run build"
+  ```
+- Set environment variable `DATABASE_URL` in Vercel dashboard.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+prisma/           # Prisma schema, migrations, seed
+src/app/          # Next.js App Router pages, components, API
+src/generated/    # Generated Prisma client
+public/           # Static assets
+.eslint.config.mjs # ESLint config (flat, ignores generated Prisma)
+tsconfig.json     # TypeScript config
+```
 
-## Deploy on Vercel
+## Security & Best Practices
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- All Prisma code is server-only (never imported in client components)
+- Email is masked in UI
+- Messages are escaped to prevent XSS
+- Rate limiting middleware for API
+- ESLint ignores generated Prisma files
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Troubleshooting
+
+- If Prisma Client error on Vercel/Netlify: ensure `prisma generate` runs before build
+- If lint error on generated files: check ESLint config ignores
+- For database issues: check `DATABASE_URL` env variable
+
+## License
+
+Free hehehe
