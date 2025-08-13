@@ -1,26 +1,114 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --background: #f8f3e8; /* Vintage paper color */
+  --foreground: #3a3226; /* Dark brown for text */
+  --accent: #d95d39; /* Retro orange */
+  --secondary: #7a6a5f; /* Muted brown */
+  --highlight: #f2e9e1; /* Light highlight */
+  --retro-border: 2px solid #3a3226;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #f0e6d2; /* Slightly darker paper for dark mode */
+    --foreground: #2a241b; /* Darker brown */
+    --accent: #e67e51; /* Brighter orange */
+    --secondary: #6b5d52; /* Darker muted brown */
+    --highlight: #e8ddd0; /* Darker highlight */
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Courier New", monospace;
+  line-height: 1.6;
+  background-image: linear-gradient(
+    to bottom,
+    var(--highlight) 1px,
+    transparent 1px
+  );
+  background-size: 100% 24px;
+  background-attachment: fixed;
+}
+
+/* Retro styling */
+.retro-box {
+  border: var(--retro-border);
+  box-shadow: 4px 4px 0px 0px var(--foreground);
+  transition: all 0.2s ease;
+  background-color: var(--background);
+  position: relative;
+}
+
+.retro-box:hover {
+  box-shadow: 6px 6px 0px 0px var(--foreground);
+  transform: translate(-2px, -2px);
+}
+
+.retro-box::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--accent);
+}
+
+.retro-button {
+  border: var(--retro-border);
+  background: var(--background);
+  color: var(--foreground);
+  padding: 0.5rem 1.5rem;
+  box-shadow: 3px 3px 0px 0px var(--foreground);
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+  overflow: hidden;
+}
+
+.retro-button:hover {
+  background: var(--foreground);
+  color: var(--background);
+  box-shadow: 4px 4px 0px 0px var(--foreground);
+}
+
+.retro-button:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.retro-input {
+  border: var(--retro-border);
+  background: var(--background);
+  color: var(--foreground);
+  padding: 0.75rem;
+  font-family: inherit;
+  box-shadow: inset 2px 2px 0px 0px rgba(0, 0, 0, 0.1);
+}
+
+.retro-input:focus {
+  outline: none;
+  box-shadow: inset 2px 2px 0px 0px rgba(0, 0, 0, 0.1), 0 0 0 2px var(--accent);
+}
+
+/* Typography enhancements */
+h1,
+h2,
+h3 {
+  font-weight: bold;
+  letter-spacing: -0.5px;
+}
+
+/* Special retro elements */
+.retro-stripe {
+  height: 4px;
+  background: var(--accent);
+  margin: 1rem 0;
+  box-shadow: 0 2px 0px 0px var(--foreground);
 }

@@ -1,103 +1,129 @@
-import Image from "next/image";
+"use client"
+import MessageForm from "./MessageForm";
+import PaginationControls from "./PaginationControls";
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 
-export default function Home() {
+function escapeHTML(str: string) {
+  return str.replace(/[&<>'"`]/g, (tag) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    "'": '&#39;',
+    '"': '&quot;',
+    '`': '&#96;',
+  }[tag] ?? tag));
+}
+
+function maskEmail(email: string) {
+  if (!email) return "";
+  const [user, domain] = email.split("@");
+  if (!user || !domain) return email;
+  return user[0] + "***@" + domain;
+}
+
+export default function GuestBookPage() {
+  const searchParams = useSearchParams();
+  const page = Number(searchParams.get("page") || 1);
+  const limit = Number(searchParams.get("limit") || 5);
+
+  const [messages, setMessages] = useState<any[]>([]);
+  const [totalMessages, setTotalMessages] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  async function loadMessages() {
+    setLoading(true);
+    const res = await fetch("/api/messages?page=" + page + "&limit=" + limit);
+    const data = await res.json();
+    setMessages(data.messages || []);
+    setTotalMessages(data.totalMessages || 0);
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    loadMessages();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, limit]);
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <main className="max-w-2xl mx-auto my-8 px-4">
+      <header className="mb-12 text-center">
+        <h1 className="text-4xl font-bold mb-2 underline decoration-wavy decoration-[var(--accent)]">
+          GUEST BOOK
+        </h1>
+        <p className="text-[var(--secondary)]">/// SIGN IN WITH YOUR MESSAGE ///</p>
+      </header>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      <MessageForm onMessageSent={loadMessages} />
+
+      <section className="mt-16">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold pb-2 border-b border-[var(--secondary)]">
+            VISITOR MESSAGES
+          </h2>
+          <div className="text-sm text-[var(--secondary)]">
+            {totalMessages} MESSAGES TOTAL
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+
+        {loading ? (
+          <div className="retro-box p-8 text-center bg-[var(--background)] text-[var(--secondary)]">
+            <p>LOADING MESSAGES...</p>
+          </div>
+        ) : messages.length === 0 ? (
+          <div className="retro-box p-8 text-center bg-[var(--background)] text-[var(--secondary)]">
+            <p>NO MESSAGES FOUND.</p>
+            <p className="mt-2">BE THE FIRST TO LEAVE YOUR MARK!</p>
+          </div>
+        ) : (
+          <>
+            <div className="grid gap-4 mb-8">
+              {messages.map((msg: any) => (
+                <article
+                  key={msg.id}
+                  className="retro-box p-4 bg-[var(--background)] hover:bg-[var(--highlight)] transition-colors"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="flex items-center justify-center w-8 h-8 border-2 border-[var(--foreground)] bg-[var(--accent)] text-[var(--background)] font-bold flex-shrink-0">
+                      {escapeHTML(msg.name.charAt(0).toUpperCase())}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-baseline gap-2">
+                        <h3 className="font-bold text-sm truncate">
+                          {escapeHTML(msg.name.toUpperCase())}
+                        </h3>
+                        {msg.email && (
+                          <a
+                            href={`mailto:${escapeHTML(msg.email)}`}
+                            className="text-xs text-[var(--accent)] hover:underline truncate"
+                          >
+                            {maskEmail(msg.email)}
+                          </a>
+                        )}
+                      </div>
+                      <p className="text-sm mt-1 whitespace-pre-line break-words">
+                        {escapeHTML(msg.message)}
+                      </p>
+                      <time
+                        dateTime={msg.createdAt}
+                        className="text-xs text-[var(--secondary)] block mt-2"
+                      >
+                        {new Date(msg.createdAt).toLocaleString().toUpperCase()}
+                      </time>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+            <PaginationControls
+              currentPage={page}
+              totalPages={Math.ceil(totalMessages / limit)}
+              limit={limit}
+              totalMessages={totalMessages}
+            />
+          </>
+        )}
+      </section>
+    </main>
   );
 }
