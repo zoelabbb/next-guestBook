@@ -9,10 +9,10 @@ const compat = new FlatCompat({
   baseDirectory: __dirname,
 });
 
-const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
-];
-// Ignore generated Prisma client from linting
-eslintConfig.ignores = ["src/generated/prisma/**"];
 
-export default eslintConfig;
+export default [
+  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  {
+    ignores: ["src/generated/prisma/**"],
+  },
+];

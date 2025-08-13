@@ -16,7 +16,7 @@ export async function GET(req: Request) {
             prisma.guestBook.count()
         ]);
         return NextResponse.json({ messages, totalMessages });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: "Gagal mengambil pesan." }, { status: 500 });
     }
 }
@@ -37,7 +37,7 @@ export async function POST(req: Request) {
             data: { name, message, email: email || "" },
         });
         return NextResponse.json(newMsg);
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: "Gagal menyimpan pesan." }, { status: 500 });
     }
 }

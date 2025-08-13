@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import { addMessage } from "./controllers/messageController";
 
 function validateEmail(email: string) {
     return /^([\w-.]+)@([\w-]+)\.([\w]{2,})$/.test(email);
@@ -52,9 +51,10 @@ export default function MessageForm({ onMessageSent }: { onMessageSent?: () => v
             setEmail("");
             setToast({ type: "success", message: "Message sent successfully!" });
             if (onMessageSent) onMessageSent();
-        } catch (err: any) {
-            setError(err.message);
-            setToast({ type: "error", message: err.message });
+        } catch (err) {
+            const msg = err instanceof Error ? err.message : String(err);
+            setError(msg);
+            setToast({ type: "error", message: msg });
         } finally {
             setLoading(false);
         }

@@ -1,8 +1,16 @@
 "use client"
 import MessageForm from "./MessageForm";
 import PaginationControls from "./PaginationControls";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+
+type MessageType = {
+  id: string;
+  name: string;
+  message: string;
+  email: string;
+  createdAt?: string;
+};
 
 function escapeHTML(str: string) {
   return str.replace(/[&<>'"`]/g, (tag) => ({
@@ -23,11 +31,19 @@ function maskEmail(email: string) {
 }
 
 export default function GuestBookPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <GuestBookPageContent />
+    </Suspense>
+  );
+}
+
+function GuestBookPageContent() {
   const searchParams = useSearchParams();
   const page = Number(searchParams.get("page") || 1);
   const limit = Number(searchParams.get("limit") || 5);
 
-  const [messages, setMessages] = useState<any[]>([]);
+  const [messages, setMessages] = useState<MessageType[]>([]);
   const [totalMessages, setTotalMessages] = useState(0);
   const [loading, setLoading] = useState(true);
 
@@ -51,7 +67,7 @@ export default function GuestBookPage() {
         <h1 className="text-4xl font-bold mb-2 underline decoration-wavy decoration-[var(--accent)]">
           GUEST BOOK
         </h1>
-        <p className="text-[var(--secondary)]">/// SIGN IN WITH YOUR MESSAGE ///</p>
+        <p className="text-[var(--secondary)]">{`/// SIGN IN WITH YOUR MESSAGE ///`}</p>
       </header>
 
       <MessageForm onMessageSent={loadMessages} />
@@ -78,7 +94,7 @@ export default function GuestBookPage() {
         ) : (
           <>
             <div className="grid gap-4 mb-8">
-              {messages.map((msg: any) => (
+              {messages.map((msg: MessageType) => (
                 <article
                   key={msg.id}
                   className="retro-box p-4 bg-[var(--background)] hover:bg-[var(--highlight)] transition-colors"
@@ -108,7 +124,7 @@ export default function GuestBookPage() {
                         dateTime={msg.createdAt}
                         className="text-xs text-[var(--secondary)] block mt-2"
                       >
-                        {new Date(msg.createdAt).toLocaleString().toUpperCase()}
+                        {msg.createdAt ? new Date(msg.createdAt).toLocaleString().toUpperCase() : ""}
                       </time>
                     </div>
                   </div>
